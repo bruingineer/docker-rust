@@ -185,6 +185,10 @@ def update_ci():
         versions += f"          - name: alpine{version}\n"
         versions += f"            variant: alpine{version}\n"
 
+    for version, build in windows_servercore_versions:
+        versions += f"          - name: windowsservercore-{version}-{build}-msvc\n"
+        versions += f"            variant: windowsservercore-{version}-{build}-msvc\n"
+
     marker = "#VERSIONS\n"
     split = rendered.split(marker)
     rendered = split[0] + marker + versions + marker + split[2]
@@ -200,7 +204,6 @@ def update_windows():
             .replace("%%SDK-BUILD%%", build) \
             .replace("%%RUSTUP-SHA256%%", rustup_hash_windows("x86_64-pc-windows-msvc"))
         write_file(f"{stable.rust_version}/windowsservercore-{version}/msvc/Dockerfile", rendered)
-
 
 def update_mirror_stable_ci():
     file = ".github/workflows/mirror_stable.yml"
@@ -303,6 +306,9 @@ def update_nightly_ci():
         versions += "            tags: |\n"
         for tag in tags:
             versions += f"              {tag}\n"
+
+    for version, build in windows_servercore_versions:
+
 
     marker = "#VERSIONS\n"
     split = config.split(marker)
