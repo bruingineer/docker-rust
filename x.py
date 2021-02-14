@@ -205,6 +205,15 @@ def update_windows():
             .replace("%%RUSTUP-SHA256%%", rustup_hash_windows("x86_64-pc-windows-msvc"))
         write_file(f"{stable.rust_version}/windowsservercore-{version}/msvc/Dockerfile", rendered)
 
+    template = read_file("Dockerfile-windows-gnu.template")
+    for version, build in windows_servercore_versions:
+        rendered = template \
+            .replace("%%RUST-VERSION%%", stable.rust_version) \
+            .replace("%%RUSTUP-VERSION%%", rustup_version) \
+            .replace("%%WINDOWS-VERSION%%", version) \
+            .replace("%%RUSTUP-SHA256%%", rustup_hash_windows("x86_64-pc-windows-msvc"))
+        write_file(f"{stable.rust_version}/windowsservercore-{version}/gnu/Dockerfile", rendered)
+
 def update_mirror_stable_ci():
     file = ".github/workflows/mirror_stable.yml"
     config = read_file(file)
@@ -309,6 +318,11 @@ def update_nightly_ci():
 
     for version, build in windows_servercore_versions:
 
+    for version, build in windows_servercore_versions:
+        versions += f"          - variant: windowsservercore-{version}/gnu\n"
+        versions += f"            os: windows-2019\n"
+        versions += f"            version: {rust_version}\n"
+
 
     marker = "#VERSIONS\n"
     split = config.split(marker)
@@ -395,6 +409,17 @@ GitRepo: https://github.com/rust-lang/docker-rust.git
             tags,
             map(lambda a: a.bashbrew, alpine_arches),
             os.path.join(stable.name, f"alpine{version}"))
+
+    for version, build in windows_servercore_versions:
+        tags = []
+        for version_tag in version_tags():
+            tags.append(f"{version_tag}-windowsservercore-{version}-gnu")
+        tags.append(f"windowsservercore-{version}-gnu")
+
+        library += single_library(
+            tags,
+            ["x86_64"],
+            os.path.join(rust_version, f"windowsservercore-{version}", "gnu"))
 
     print(library)
 
