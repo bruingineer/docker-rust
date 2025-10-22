@@ -1,6 +1,6 @@
 # escape=`
 
-FROM mcr.microsoft.com/windows/servercore:%%WINDOWS-VERSION%%
+FROM mcr.microsoft.com/windows/servercore:1809
 
 LABEL org.opencontainers.image.source=https://github.com/rust-lang/docker-rust
 
@@ -8,11 +8,11 @@ SHELL ["powershell.exe", "-NoLogo", "-Command", "$ErrorActionPreference = 'Stop'
 
 ENV RUSTUP_HOME=C:\\rustup \
     CARGO_HOME=C:\\cargo \
-    RUST_VERSION=%%RUST-VERSION%%
+    RUST_VERSION=1.90.0
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; \
-    $url = 'https://static.rust-lang.org/rustup/archive/%%RUSTUP-VERSION%%/x86_64-pc-windows-gnu/rustup-init.exe'; \
-    $sha256 = '%%RUSTUP-SHA256%%'; \
+    $url = 'https://static.rust-lang.org/rustup/archive/1.28.2/x86_64-pc-windows-gnu/rustup-init.exe'; \
+    $sha256 = '88d8258dcf6ae4f7a80c7d1088e1f36fa7025a1cfd1343731b4ee6f385121fc0'; \
     Invoke-WebRequest -Uri $url -OutFile C:\rustup-init.exe; \
     $actual256 = (Get-FileHash rustup-init.exe -Algorithm sha256).Hash; \
     if ($actual256 -ne $sha256) { \
