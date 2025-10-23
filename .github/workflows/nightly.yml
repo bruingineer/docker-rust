@@ -69,17 +69,17 @@ jobs:
             tags: |
               nightly-alpine3.22
               nightly-alpine
-          - name: windows1809-gnu
+          - name: windowsservercore1809-gnu
             context: nightly/windowsservercore-1809/gnu
-            platforms: windows/x86_64
+            platforms: windows/amd64
             tags: |
-              nightly-windows1809-gnu
-          - name: windows1809-17763-msvc
+              nightly-windowsservercore1809-gnu
+          - name: windowsservercore1809-17763-msvc
             context: nightly/windowsservercore-1809/msvc
-            platforms: windows/x86_64
+            platforms: windows/amd64
             tags: |
-              nightly-windows1809-msvc
-              nightly-windows1809-17763-msvc
+              nightly-windowsservercore1809-msvc
+              nightly-windowsservercore1809-17763-msvc
 #VERSIONS
     name: ${{ matrix.name }}
     steps:

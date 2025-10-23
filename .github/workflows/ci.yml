@@ -42,10 +42,10 @@ jobs:
             variant: alpine3.21
           - name: alpine3.22
             variant: alpine3.22
-          - name: windowsservercore-1809-17763-msvc
-            variant: windowsservercore-1809/msvc
-          - name: windowsservercore-1809-gnu
+          - name: windowsservercore1809-gnu
             variant: windowsservercore-1809/gnu
+          - name: windowsservercore1809-17763-msvc
+            variant: windowsservercore-1809/msvc
 #VERSIONS
     name: ${{ matrix.name }}
     steps:
