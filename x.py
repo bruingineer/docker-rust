@@ -213,7 +213,7 @@ def update_windows():
             .replace("%%RUST-VERSION%%", stable.rust_version) \
             .replace("%%RUSTUP-VERSION%%", rustup_version) \
             .replace("%%WINDOWS-VERSION%%", version) \
-            .replace("%%RUSTUP-SHA256%%", rustup_hash_windows("x86_64-pc-windows-msvc"))
+            .replace("%%RUSTUP-SHA256%%", rustup_hash_windows("x86_64-pc-windows-gnu"))
         write_file(f"{stable.name}/windowsservercore-{version}/gnu/Dockerfile", rendered)
 
 def update_mirror_stable_ci():
@@ -420,6 +420,16 @@ GitRepo: https://github.com/rust-lang/docker-rust.git
             tags,
             ["x86_64"],
             os.path.join(stable.rust_version, f"windowsservercore-{version}", "gnu"))
+
+        tags = []
+        for version_tag in version_tags():
+            tags.append(f"{version_tag}-windowsservercore-{version}-msvc")
+        tags.append(f"windowsservercore-{version}-msvc")
+
+        library += single_library(
+            tags,
+            ["x86_64"],
+            os.path.join(stable.rust_version, f"windowsservercore-{version}", "msvc"))
 
     print(library)
 

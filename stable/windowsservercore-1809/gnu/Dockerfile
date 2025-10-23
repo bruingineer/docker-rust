@@ -12,7 +12,7 @@ ENV RUSTUP_HOME=C:\\rustup \
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; \
     $url = 'https://static.rust-lang.org/rustup/archive/1.28.2/x86_64-pc-windows-gnu/rustup-init.exe'; \
-    $sha256 = '88d8258dcf6ae4f7a80c7d1088e1f36fa7025a1cfd1343731b4ee6f385121fc0'; \
+    $sha256 = 'ccbfd951d8024856043b3a0c3903a59f39937bce8d3074768b0d3da55f21e817'; \
     Invoke-WebRequest -Uri $url -OutFile C:\rustup-init.exe; \
     $actual256 = (Get-FileHash rustup-init.exe -Algorithm sha256).Hash; \
     if ($actual256 -ne $sha256) { \
