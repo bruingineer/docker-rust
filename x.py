@@ -247,27 +247,6 @@ def update_mirror_stable_ci():
         for tag in tags:
             versions += f"              {tag}\n"
 
-    for version in windows_versions:
-        tags = []
-        for version_tag in version_tags():
-            tags.append(f"{version_tag}-windows{version}-gnu")
-        tags.append(f"windows{version}-gnu")
-
-        versions += f"          - name: windows{version}-gnu\n"
-        versions += "            tags: |\n"
-        for tag in tags:
-            versions += f"              {tag}\n"
-    
-        tags = []
-        for version_tag in version_tags():
-            tags.append(f"{version_tag}-windows{version}-{windowsMsvcSdkBuild}-msvc")
-        tags.append(f"windows{version}-{windowsMsvcSdkBuild}-msvc")
-
-        versions += f"          - name: windows{version}-{windowsMsvcSdkBuild}-msvc\n"
-        versions += "            tags: |\n"
-        for tag in tags:
-            versions += f"              {tag}\n"
-
     for release in debian_releases:
         tags = []
         for version_tag in version_tags():
@@ -296,6 +275,27 @@ def update_mirror_stable_ci():
         versions += "            tags: |\n"
         for tag in tags:
             versions += f"              {tag}\n" 
+
+    for version in windows_versions:
+        tags = []
+        for version_tag in version_tags():
+            tags.append(f"{version_tag}-windows{version}-gnu")
+        tags.append(f"windows{version}-gnu")
+
+        versions += f"          - name: windows{version}-gnu\n"
+        versions += "            tags: |\n"
+        for tag in tags:
+            versions += f"              {tag}\n"
+    
+        tags = []
+        for version_tag in version_tags():
+            tags.append(f"{version_tag}-windows{version}-{windowsMsvcSdkBuild}-msvc")
+        tags.append(f"windows{version}-{windowsMsvcSdkBuild}-msvc")
+
+        versions += f"          - name: windows{version}-{windowsMsvcSdkBuild}-msvc\n"
+        versions += "            tags: |\n"
+        for tag in tags:
+            versions += f"              {tag}\n"
 
     marker = "#VERSIONS\n"
     split = config.split(marker)
