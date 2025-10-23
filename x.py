@@ -65,6 +65,10 @@ windows_versions = [
 
 windowsMsvcSdkBuild = str(17763)
 
+Msys2Release = namedtuple("Msys2Date", ['year', 'month', 'day'])
+
+msys2_release_date = Msys2Release("2025", "08", "30")
+
 # (Windows Server tag, Windows SDK build number)
 # The build number is specifically used to select the right Windows 10 SDK to
 # install from the Visual Studio Build Tools installer. See
@@ -82,7 +86,12 @@ def rustup_hash(arch):
 def rustup_hash_windows(arch):
     url = f"https://static.rust-lang.org/rustup/archive/{rustup_version}/{arch}/rustup-init.exe.sha256"
     with request.urlopen(url) as f:
-        return f.read().decode('utf-8').split()[0]
+        return f.read().decode('utf-8').split()[0]\
+
+def msys2_hash(date: Msys2Release):
+    url = f"https://github.com/msys2/msys2-installer/releases/download/{date.year}-{date.month}-{date.day}/msys2-x86_64-{date.year}{date.month}{date.day}.exe.sha256"
+    with request.urlopen(url) as f:
+        return f.read().decode('utf-8').split()[0]\
 
 def read_file(file):
     with open(file, "r") as f:
@@ -148,6 +157,10 @@ def update_windows():
                     .replace("%%RUSTUP-SHA256%%", rustup_hash_windows(f"x86_64-pc-windows-{abi}"))
                 if abi == "msvc":
                     rendered = rendered.replace("%%SDK-BUILD%%", windowsMsvcSdkBuild)
+                if abi == "gnu":
+                    rendered = rendered.replace("%%MSYS2-DATE%%", f"{msys2_release_date.year}-{msys2_release_date.month}-{msys2_release_date.day}") \
+                        .replace("%%MSYS2-SHORTDATE%%", f"{msys2_release_date.year}{msys2_release_date.month}{msys2_release_date.day}") \
+                        .replace("%%MSYS2-SHA256%%", msys2_hash(msys2_release_date))
                 write_file(f"{channel.name}/windowsservercore-{version}/{abi}/Dockerfile", rendered)
 
 def arch_cases_start(arch_cmd):
