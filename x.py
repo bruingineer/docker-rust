@@ -59,6 +59,12 @@ alpine_versions = [
     latest_alpine_version,
 ]
 
+windows_versions = [
+    "1809"
+]
+
+windowsMsvcSdkBuild = str(17763)
+
 # (Windows Server tag, Windows SDK build number)
 # The build number is specifically used to select the right Windows 10 SDK to
 # install from the Visual Studio Build Tools installer. See
@@ -129,6 +135,21 @@ def update_alpine():
                 f"{channel.name}/alpine{version}/Dockerfile",
             )
 
+def update_windows():
+    abis = ["msvc", "gnu"]
+    for abi in abis:
+        template = read_file(f"Dockerfile-windows-{abi}.template")
+        for version in windows_versions:
+            for channel in supported_channels:
+                rendered = template \
+                    .replace("%%RUST-VERSION%%", channel.rust_version) \
+                    .replace("%%RUSTUP-VERSION%%", rustup_version) \
+                    .replace("%%WINDOWS-VERSION%%", version) \
+                    .replace("%%RUSTUP-SHA256%%", rustup_hash_windows(f"x86_64-pc-windows-{abi}"))
+                if abi == "msvc":
+                    rendered = rendered.replace("%%SDK-BUILD%%", windowsMsvcSdkBuild)
+                write_file(f"{channel.name}/windowsservercore-{version}/{abi}/Dockerfile", rendered)
+
 def arch_cases_start(arch_cmd):
     start = f'arch="{arch_cmd}"; \\\n'
     start += '    case "$arch" in \\\n'
@@ -195,26 +216,6 @@ def update_ci():
     split = rendered.split(marker)
     rendered = split[0] + marker + versions + marker + split[2]
     write_file(file, rendered)
-
-def update_windows():
-    template = read_file("Dockerfile-windows-msvc.template")
-    for version, build in windows_servercore_versions:
-        rendered = template \
-            .replace("%%RUST-VERSION%%", stable.rust_version) \
-            .replace("%%RUSTUP-VERSION%%", rustup_version) \
-            .replace("%%WINDOWS-VERSION%%", version) \
-            .replace("%%SDK-BUILD%%", build) \
-            .replace("%%RUSTUP-SHA256%%", rustup_hash_windows("x86_64-pc-windows-msvc"))
-        write_file(f"{stable.name}/windowsservercore-{version}/msvc/Dockerfile", rendered)
-
-    template = read_file("Dockerfile-windows-gnu.template")
-    for version, build in windows_servercore_versions:
-        rendered = template \
-            .replace("%%RUST-VERSION%%", stable.rust_version) \
-            .replace("%%RUSTUP-VERSION%%", rustup_version) \
-            .replace("%%WINDOWS-VERSION%%", version) \
-            .replace("%%RUSTUP-SHA256%%", rustup_hash_windows("x86_64-pc-windows-gnu"))
-        write_file(f"{stable.name}/windowsservercore-{version}/gnu/Dockerfile", rendered)
 
 def update_mirror_stable_ci():
     file = ".github/workflows/mirror_stable.yml"
