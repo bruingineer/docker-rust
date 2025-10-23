@@ -59,6 +59,12 @@ alpine_versions = [
     latest_alpine_version,
 ]
 
+
+# Windows Server tag & Windows SDK build number
+# The build number is specifically used to select the right Windows 10 SDK to
+# install from the Visual Studio Build Tools installer. See
+# https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2019#c-build-tools
+# for the build version numbers.
 windows_versions = [
     "1809"
 ]
@@ -68,15 +74,6 @@ windowsMsvcSdkBuild = str(17763)
 Msys2Release = namedtuple("Msys2Date", ['year', 'month', 'day'])
 
 msys2_release_date = Msys2Release("2025", "08", "30")
-
-# (Windows Server tag, Windows SDK build number)
-# The build number is specifically used to select the right Windows 10 SDK to
-# install from the Visual Studio Build Tools installer. See
-# https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2019#c-build-tools
-# for the build version numbers.
-windows_servercore_versions = [
-    ("1809", "17763"),
-]
 
 def rustup_hash(arch):
     url = f"https://static.rust-lang.org/rustup/archive/{rustup_version}/{arch}/rustup-init.sha256"
@@ -219,11 +216,11 @@ def update_ci():
         versions += f"          - name: alpine{version}\n"
         versions += f"            variant: alpine{version}\n"
 
-    for version, build in windows_servercore_versions:
-        versions += f"          - name: windowsservercore-{version}-{build}-msvc\n"
-        versions += f"            variant: windowsservercore-{version}-{build}/msvc\n"
-        versions += f"          - name: windowsservercore-{version}-{build}-gnu\n"
-        versions += f"            variant: windowsservercore-{version}-{build}/gnu\n"
+    for version in windows_versions:
+        versions += f"          - name: windowsservercore-{version}-{windowsMsvcSdkBuild}-msvc\n"
+        versions += f"            variant: windowsservercore-{version}/msvc\n"
+        versions += f"          - name: windowsservercore-{version}-gnu\n"
+        versions += f"            variant: windowsservercore-{version}/gnu\n"
 
     marker = "#VERSIONS\n"
     split = rendered.split(marker)
@@ -246,6 +243,27 @@ def update_mirror_stable_ci():
             tags.append("alpine")
 
         versions += f"          - name: alpine{version}\n"
+        versions += "            tags: |\n"
+        for tag in tags:
+            versions += f"              {tag}\n"
+
+    for version in windows_versions:
+        tags = []
+        for version_tag in version_tags():
+            tags.append(f"{version_tag}-windows{version}-gnu")
+        tags.append(f"windows{version}-gnu")
+
+        versions += f"          - name: windows{version}-gnu\n"
+        versions += "            tags: |\n"
+        for tag in tags:
+            versions += f"              {tag}\n"
+    
+        tags = []
+        for version_tag in version_tags():
+            tags.append(f"{version_tag}-windows{version}-{windowsMsvcSdkBuild}-msvc")
+        tags.append(f"windows{version}-{windowsMsvcSdkBuild}-msvc")
+
+        versions += f"          - name: windows{version}-{windowsMsvcSdkBuild}-msvc\n"
         versions += "            tags: |\n"
         for tag in tags:
             versions += f"              {tag}\n"
@@ -332,11 +350,25 @@ def update_nightly_ci():
         for tag in tags:
             versions += f"              {tag}\n"
 
-    # for version, build in windows_servercore_versions:
-    #     versions += f"          - variant: windowsservercore-{version}/gnu\n"
-    #     versions += f"            os: windows-2019\n"
-    #     versions += f"            version: {rust_version}\n"
+    for version in windows_versions:
+        platforms = "windows/x86_64"
+        tags = [f"nightly-windows{version}-gnu"]
 
+        versions += f"          - name: windows{version}-gnu\n"
+        versions += f"            context: nightly/windowsservercore-{version}/gnu\n"
+        versions += f"            platforms: {platforms}\n"
+        versions += "            tags: |\n"
+        for tag in tags:
+            versions += f"              {tag}\n"
+
+        tags = [f"nightly-windows{version}-msvc", f"nightly-windows{version}-{windowsMsvcSdkBuild}-msvc"]
+
+        versions += f"          - name: windows{version}-{windowsMsvcSdkBuild}-msvc\n"
+        versions += f"            context: nightly/windowsservercore-{version}/msvc\n"
+        versions += f"            platforms: {platforms}\n"
+        versions += "            tags: |\n"
+        for tag in tags:
+            versions += f"              {tag}\n"
 
     marker = "#VERSIONS\n"
     split = config.split(marker)
