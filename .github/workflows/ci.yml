@@ -42,10 +42,6 @@ jobs:
             variant: alpine3.21
           - name: alpine3.22
             variant: alpine3.22
-          - name: windowsservercoreltsc2019-gnu
-            variant: windows/servercoreltsc2019/gnu
-          - name: windowsnanoserverltsc2019-gnu
-            variant: windows/nanoserverltsc2019/gnu
           - name: windowsservercoreltsc2022-gnu
             variant: windows/servercoreltsc2022/gnu
           - name: windowsnanoserverltsc2022-gnu

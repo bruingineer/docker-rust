@@ -75,7 +75,7 @@ windows_msvc_versions = [
 
 windowsMsvcSdkBuild = str(17763)
 
-windows_gnu_versions = ["ltsc2019", "ltsc2022", "ltsc2025"]
+windows_gnu_versions = ["ltsc2022", "ltsc2025"]
 
 Msys2Release = namedtuple("Msys2Date", ['year', 'month', 'day'])
 
