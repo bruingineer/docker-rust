@@ -398,7 +398,7 @@ def update_nightly_ci():
         tags = [f"nightly-windowsservercore{version}-gnu"]
 
         versions += f"          - name: windowsservercore{version}-gnu\n"
-        versions += f"            context: nightly/windowsservercore-{version}/gnu\n"
+        versions += f"            context: nightly/windows/servercore{version}/gnu\n"
         versions += f"            platforms: {platforms}\n"
         versions += "            tags: |\n"
         for tag in tags:
@@ -407,7 +407,7 @@ def update_nightly_ci():
         tags = [f"nightly-windowsnanoserver{version}-gnu"]
 
         versions += f"          - name: windowsnanoserver{version}-gnu\n"
-        versions += f"            context: nightly/windowsnanoserver-{version}/gnu\n"
+        versions += f"            context: nightly/windows/nanoserver{version}/gnu\n"
         versions += f"            platforms: {platforms}\n"
         versions += "            tags: |\n"
         for tag in tags:
@@ -417,7 +417,7 @@ def update_nightly_ci():
         tags = [f"nightly-windowsservercore{version.name}-msvc", f"nightly-windowsservercore{version.name}-{version.sdkbuild}-msvc"]
 
         versions += f"          - name: windowsservercore{version.name}-{version.sdkbuild}-msvc\n"
-        versions += f"            context: nightly/windowsservercore-{version.name}/msvc\n"
+        versions += f"            context: nightly/windows/servercore{version.name}/msvc\n"
         versions += f"            platforms: {platforms}\n"
         versions += "            tags: |\n"
         for tag in tags:
