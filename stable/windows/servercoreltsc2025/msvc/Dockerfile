@@ -42,7 +42,7 @@ RUN $url = 'https://download.visualstudio.microsoft.com/download/pr/20130c62-1bc
         --quiet --wait --norestart --nocache `
         --installPath C:\BuildTools `
         --add Microsoft.Component.MSBuild `
-        --add Microsoft.VisualStudio.Component.Windows10SDK.22000 `
+        --add Microsoft.VisualStudio.Component.Windows11SDK.22000 `
         --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64'; `
     Remove-Item 'C:\\vs_BuildTools.exe'; `
     Remove-Item -Force -Recurse 'C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer'; `

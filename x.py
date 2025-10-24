@@ -73,12 +73,8 @@ windows_msvc_versions = [
     WindowsMsvcVersion("ltsc2025", "Windows11", "22000")
 ]
 
-windowsMsvcSdkBuild = str(17763)
-
-windows_gnu_versions = ["ltsc2022", "ltsc2025"]
-
+windows_gnu_versions = ["ltsc2019", "ltsc2022", "ltsc2025"]
 Msys2Release = namedtuple("Msys2Date", ['year', 'month', 'day'])
-
 msys2_release_date = Msys2Release("2025", "08", "30")
 
 def rustup_hash(arch):

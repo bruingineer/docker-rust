@@ -69,6 +69,16 @@ jobs:
             tags: |
               nightly-alpine3.22
               nightly-alpine
+          - name: windowsservercoreltsc2019-gnu
+            context: nightly/windows/servercoreltsc2019/gnu
+            platforms: windows/amd64
+            tags: |
+              nightly-windowsservercoreltsc2019-gnu
+          - name: windowsnanoserverltsc2019-gnu
+            context: nightly/windows/nanoserverltsc2019/gnu
+            platforms: windows/amd64
+            tags: |
+              nightly-windowsnanoserverltsc2019-gnu
           - name: windowsservercoreltsc2022-gnu
             context: nightly/windows/servercoreltsc2022/gnu
             platforms: windows/amd64

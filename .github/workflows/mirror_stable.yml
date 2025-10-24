@@ -85,6 +85,18 @@ jobs:
               1.90-slim
               1.90.0-slim
               slim
+          - name: windowsservercoreltsc2019-gnu
+            tags: |
+              1-windowsservercoreltsc2019-gnu
+              1.90-windowsservercoreltsc2019-gnu
+              1.90.0-windowsservercoreltsc2019-gnu
+              windowsservercoreltsc2019-gnu
+          - name: windowsnanoserverltsc2019-gnu
+            tags: |
+              1-windowsnanoserverltsc2019-gnu
+              1.90-windowsnanoserverltsc2019-gnu
+              1.90.0-windowsnanoserverltsc2019-gnu
+              windowsnanoserverltsc2019-gnu
           - name: windowsservercoreltsc2022-gnu
             tags: |
               1-windowsservercoreltsc2022-gnu
