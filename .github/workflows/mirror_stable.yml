@@ -85,6 +85,72 @@ jobs:
               1.90-slim
               1.90.0-slim
               slim
+          - name: windowsservercoreltsc2019-gnu
+            tags: |
+              1-windowsservercoreltsc2019-gnu
+              1.90-windowsservercoreltsc2019-gnu
+              1.90.0-windowsservercoreltsc2019-gnu
+              windowsservercoreltsc2019-gnu
+          - name: windowsnanoserverltsc2019-gnu
+            tags: |
+              1-windowsnanoserverltsc2019-gnu
+              1.90-windowsnanoserverltsc2019-gnu
+              1.90.0-windowsnanoserverltsc2019-gnu
+              windowsnanoserverltsc2019-gnu
+          - name: windowsservercoreltsc2022-gnu
+            tags: |
+              1-windowsservercoreltsc2022-gnu
+              1.90-windowsservercoreltsc2022-gnu
+              1.90.0-windowsservercoreltsc2022-gnu
+              windowsservercoreltsc2022-gnu
+          - name: windowsnanoserverltsc2022-gnu
+            tags: |
+              1-windowsnanoserverltsc2022-gnu
+              1.90-windowsnanoserverltsc2022-gnu
+              1.90.0-windowsnanoserverltsc2022-gnu
+              windowsnanoserverltsc2022-gnu
+          - name: windowsservercoreltsc2025-gnu
+            tags: |
+              1-windowsservercoreltsc2025-gnu
+              1.90-windowsservercoreltsc2025-gnu
+              1.90.0-windowsservercoreltsc2025-gnu
+              windowsservercoreltsc2025-gnu
+          - name: windowsnanoserverltsc2025-gnu
+            tags: |
+              1-windowsnanoserverltsc2025-gnu
+              1.90-windowsnanoserverltsc2025-gnu
+              1.90.0-windowsnanoserverltsc2025-gnu
+              windowsnanoserverltsc2025-gnu
+          - name: windowsservercoreltsc2019-17763-msvc
+            tags: |
+              1-windowsservercoreltsc2019-msvc
+              1-windowsservercoreltsc2019-17763-msvc
+              1.90-windowsservercoreltsc2019-msvc
+              1.90-windowsservercoreltsc2019-17763-msvc
+              1.90.0-windowsservercoreltsc2019-msvc
+              1.90.0-windowsservercoreltsc2019-17763-msvc
+              windowsservercoreltsc2019-msvc
+              windowsservercoreltsc2019-17763-msvc
+          - name: windowsservercoreltsc2022-20348-msvc
+            tags: |
+              1-windowsservercoreltsc2022-msvc
+              1-windowsservercoreltsc2022-20348-msvc
+              1.90-windowsservercoreltsc2022-msvc
+              1.90-windowsservercoreltsc2022-20348-msvc
+              1.90.0-windowsservercoreltsc2022-msvc
+              1.90.0-windowsservercoreltsc2022-20348-msvc
+              windowsservercoreltsc2022-msvc
+              windowsservercoreltsc2022-20348-msvc
+          - name: windowsservercoreltsc2025-22000-msvc
+            tags: |
+              1-windowsservercoreltsc2025-msvc
+              1-windowsservercoreltsc2025-22000-msvc
+              1.90-windowsservercoreltsc2025-msvc
+              1.90-windowsservercoreltsc2025-22000-msvc
+              1.90.0-windowsservercoreltsc2025-msvc
+              1.90.0-windowsservercoreltsc2025-22000-msvc
+              windowsservercoreltsc2025-msvc
+              windowsservercoreltsc2025-22000-msvc
 #VERSIONS
     steps:
       - uses: actions/checkout@v5
