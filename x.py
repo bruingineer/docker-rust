@@ -65,11 +65,17 @@ alpine_versions = [
 # install from the Visual Studio Build Tools installer. See
 # https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2019#c-build-tools
 # for the build version numbers.
-windows_versions = [
-    "1809"
+WindowsMsvcVersion = namedtuple("WindowsMsvcVersion", ["name", "sdkos", "sdkbuild"])
+
+windows_msvc_versions = [
+    WindowsMsvcVersion("ltsc2019", "Windows10", "17763"),
+    WindowsMsvcVersion("ltsc2022", "Windows10", "20348"),
+    WindowsMsvcVersion("ltsc2025", "Windows11", "22000")
 ]
 
 windowsMsvcSdkBuild = str(17763)
+
+windows_gnu_versions = ["ltsc2019", "ltsc2022", "ltsc2025"]
 
 Msys2Release = namedtuple("Msys2Date", ['year', 'month', 'day'])
 
@@ -142,23 +148,43 @@ def update_alpine():
             )
 
 def update_windows():
-    abis = ["msvc", "gnu"]
-    for abi in abis:
-        template = read_file(f"Dockerfile-windowsservercore-{abi}.template")
-        for version in windows_versions:
-            for channel in supported_channels:
-                rendered = template \
-                    .replace("%%RUST-VERSION%%", channel.rust_version) \
-                    .replace("%%RUSTUP-VERSION%%", rustup_version) \
-                    .replace("%%WINDOWS-VERSION%%", version) \
-                    .replace("%%RUSTUP-SHA256%%", rustup_hash_windows(f"x86_64-pc-windows-{abi}"))
-                if abi == "msvc":
-                    rendered = rendered.replace("%%SDK-BUILD%%", windowsMsvcSdkBuild)
-                if abi == "gnu":
-                    rendered = rendered.replace("%%MSYS2-DATE%%", f"{msys2_release_date.year}-{msys2_release_date.month}-{msys2_release_date.day}") \
-                        .replace("%%MSYS2-SHORTDATE%%", f"{msys2_release_date.year}{msys2_release_date.month}{msys2_release_date.day}") \
-                        .replace("%%MSYS2-SHA256%%", msys2_hash(msys2_release_date))
-                write_file(f"{channel.name}/windowsservercore{version}/{abi}/Dockerfile", rendered)
+    # gnu
+    for version in windows_gnu_versions:
+        for channel in supported_channels:
+            template = read_file(f"Dockerfile-windowsservercore-gnu.template")
+            rendered = template \
+                .replace("%%RUST-VERSION%%", channel.rust_version) \
+                .replace("%%RUSTUP-VERSION%%", rustup_version) \
+                .replace("%%WINDOWS-VERSION%%", version) \
+                .replace("%%RUSTUP-SHA256%%", rustup_hash_windows(f"x86_64-pc-windows-gnu")) \
+                .replace("%%MSYS2-DATE%%", f"{msys2_release_date.year}-{msys2_release_date.month}-{msys2_release_date.day}") \
+                .replace("%%MSYS2-SHORTDATE%%", f"{msys2_release_date.year}{msys2_release_date.month}{msys2_release_date.day}") \
+                .replace("%%MSYS2-SHA256%%", msys2_hash(msys2_release_date))
+            write_file(f"{channel.name}/windows/servercore{version}/gnu/Dockerfile", rendered)
+
+            template = read_file(f"Dockerfile-windowsnanoserver-gnu.template")
+            rendered = template \
+                .replace("%%RUST-VERSION%%", channel.rust_version) \
+                .replace("%%RUSTUP-VERSION%%", rustup_version) \
+                .replace("%%WINDOWS-VERSION%%", version) \
+                .replace("%%RUSTUP-SHA256%%", rustup_hash_windows(f"x86_64-pc-windows-gnu")) \
+                .replace("%%MSYS2-DATE%%", f"{msys2_release_date.year}-{msys2_release_date.month}-{msys2_release_date.day}") \
+                .replace("%%MSYS2-SHORTDATE%%", f"{msys2_release_date.year}{msys2_release_date.month}{msys2_release_date.day}") \
+                .replace("%%MSYS2-SHA256%%", msys2_hash(msys2_release_date))
+            write_file(f"{channel.name}/windows/nanoserver{version}/gnu/Dockerfile", rendered)
+
+    # msvc
+    template = read_file(f"Dockerfile-windowsservercore-msvc.template")
+    for version in windows_msvc_versions:
+        for channel in supported_channels:
+            rendered = template \
+                .replace("%%RUST-VERSION%%", channel.rust_version) \
+                .replace("%%RUSTUP-VERSION%%", rustup_version) \
+                .replace("%%WINDOWS-VERSION%%", version.name) \
+                .replace("%%RUSTUP-SHA256%%", rustup_hash_windows(f"x86_64-pc-windows-msvc")) \
+                .replace("%%SDK-OS%%", version.sdkos) \
+                .replace("%%SDK-BUILD%%", version.sdkbuild)
+            write_file(f"{channel.name}/windows/servercore{version.name}/msvc/Dockerfile", rendered)
 
 def arch_cases_start(arch_cmd):
     start = f'arch="{arch_cmd}"; \\\n'
@@ -216,11 +242,15 @@ def update_ci():
         versions += f"          - name: alpine{version}\n"
         versions += f"            variant: alpine{version}\n"
 
-    for version in windows_versions:
+    for version in windows_gnu_versions:
         versions += f"          - name: windowsservercore{version}-gnu\n"
-        versions += f"            variant: windowsservercore-{version}/gnu\n"
-        versions += f"          - name: windowsservercore{version}-{windowsMsvcSdkBuild}-msvc\n"
-        versions += f"            variant: windowsservercore-{version}/msvc\n"
+        versions += f"            variant: windows/servercore{version}/gnu\n"
+        versions += f"          - name: windowsnanoserver{version}-gnu\n"
+        versions += f"            variant: windows/nanoserver{version}/gnu\n"
+    
+    for version in windows_msvc_versions:
+        versions += f"          - name: windowsservercore{version.name}-{version.sdkbuild}-msvc\n"
+        versions += f"            variant: windows/servercore{version.name}/msvc\n"
 
     marker = "#VERSIONS\n"
     split = rendered.split(marker)
@@ -276,7 +306,7 @@ def update_mirror_stable_ci():
         for tag in tags:
             versions += f"              {tag}\n" 
 
-    for version in windows_versions:
+    for version in windows_gnu_versions:
         tags = []
         for version_tag in version_tags():
             tags.append(f"{version_tag}-windowsservercore{version}-gnu")
@@ -286,15 +316,26 @@ def update_mirror_stable_ci():
         versions += "            tags: |\n"
         for tag in tags:
             versions += f"              {tag}\n"
-    
+
         tags = []
         for version_tag in version_tags():
-            tags.append(f"{version_tag}-windowsservercore{version}-msvc")
-            tags.append(f"{version_tag}-windowsservercore{version}-{windowsMsvcSdkBuild}-msvc")
-        tags.append(f"windowsservercore{version}-msvc")
-        tags.append(f"windowsservercore{version}-{windowsMsvcSdkBuild}-msvc")
+            tags.append(f"{version_tag}-windowsnanoserver{version}-gnu")
+        tags.append(f"windowsnanoserver{version}-gnu")
 
-        versions += f"          - name: windowsservercore{version}-{windowsMsvcSdkBuild}-msvc\n"
+        versions += f"          - name: windowsnanoserver{version}-gnu\n"
+        versions += "            tags: |\n"
+        for tag in tags:
+            versions += f"              {tag}\n"
+
+    for version in windows_msvc_versions:
+        tags = []
+        for version_tag in version_tags():
+            tags.append(f"{version_tag}-windowsservercore{version.name}-msvc")
+            tags.append(f"{version_tag}-windowsservercore{version.name}-{version.sdkbuild}-msvc")
+        tags.append(f"windowsservercore{version.name}-msvc")
+        tags.append(f"windowsservercore{version.name}-{version.sdkbuild}-msvc")
+
+        versions += f"          - name: windowsservercore{version.name}-{version.sdkbuild}-msvc\n"
         versions += "            tags: |\n"
         for tag in tags:
             versions += f"              {tag}\n"
@@ -352,7 +393,7 @@ def update_nightly_ci():
         for tag in tags:
             versions += f"              {tag}\n"
 
-    for version in windows_versions:
+    for version in windows_gnu_versions:
         platforms = "windows/amd64"
         tags = [f"nightly-windowsservercore{version}-gnu"]
 
@@ -363,10 +404,20 @@ def update_nightly_ci():
         for tag in tags:
             versions += f"              {tag}\n"
 
-        tags = [f"nightly-windowsservercore{version}-msvc", f"nightly-windowsservercore{version}-{windowsMsvcSdkBuild}-msvc"]
+        tags = [f"nightly-windowsnanoserver{version}-gnu"]
 
-        versions += f"          - name: windowsservercore{version}-{windowsMsvcSdkBuild}-msvc\n"
-        versions += f"            context: nightly/windowsservercore-{version}/msvc\n"
+        versions += f"          - name: windowsnanoserver{version}-gnu\n"
+        versions += f"            context: nightly/windowsnanoserver-{version}/gnu\n"
+        versions += f"            platforms: {platforms}\n"
+        versions += "            tags: |\n"
+        for tag in tags:
+            versions += f"              {tag}\n"
+
+    for version in windows_msvc_versions:
+        tags = [f"nightly-windowsservercore{version.name}-msvc", f"nightly-windowsservercore{version.name}-{version.sdkbuild}-msvc"]
+
+        versions += f"          - name: windowsservercore{version.name}-{version.sdkbuild}-msvc\n"
+        versions += f"            context: nightly/windowsservercore-{version.name}/msvc\n"
         versions += f"            platforms: {platforms}\n"
         versions += "            tags: |\n"
         for tag in tags:
@@ -458,7 +509,7 @@ GitRepo: https://github.com/rust-lang/docker-rust.git
             map(lambda a: a.bashbrew, alpine_arches),
             os.path.join(stable.name, f"alpine{version}"))
 
-    for version in windows_versions:
+    for version in windows_gnu_versions:
         tags = []
         for version_tag in version_tags():
             tags.append(f"{version_tag}-windowsservercore{version}-gnu")
@@ -468,17 +519,28 @@ GitRepo: https://github.com/rust-lang/docker-rust.git
             tags,
             ["windows-amd64"],
             os.path.join(stable.name, f"windowsservercore{version}", "gnu"))
-
+        
         tags = []
         for version_tag in version_tags():
-            tags.append(f"{version_tag}-windowsservercore{version}-msvc")
-            tags.append(f"{version_tag}-windowsservercore{version}-{windowsMsvcSdkBuild}-msvc")
-        tags.append(f"windowsservercore-{version}-msvc")
+            tags.append(f"{version_tag}-windowsnanoserver{version}-gnu")
+        tags.append(f"windowsnanoserver{version}-gnu")
 
         library += single_library(
             tags,
             ["windows-amd64"],
-            os.path.join(stable.name, f"windowsservercore{version}", "msvc"))
+            os.path.join(stable.name, f"windowsnanoserver{version}", "gnu"))
+
+    for version in windows_msvc_versions:
+        tags = []
+        for version_tag in version_tags():
+            tags.append(f"{version_tag}-windowsservercore{version.name}-msvc")
+            tags.append(f"{version_tag}-windowsservercore{version.name}-{version.sdkbuild}-msvc")
+        tags.append(f"windowsservercore-{version.name}-msvc")
+
+        library += single_library(
+            tags,
+            ["windows-amd64"],
+            os.path.join(stable.name, f"windowsservercore{version.name}", "msvc"))
 
     print(library)
 

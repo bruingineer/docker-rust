@@ -69,17 +69,54 @@ jobs:
             tags: |
               nightly-alpine3.22
               nightly-alpine
-          - name: windowsservercore1809-gnu
-            context: nightly/windowsservercore-1809/gnu
+          - name: windowsservercoreltsc2019-gnu
+            context: nightly/windowsservercore-ltsc2019/gnu
             platforms: windows/amd64
             tags: |
-              nightly-windowsservercore1809-gnu
-          - name: windowsservercore1809-17763-msvc
-            context: nightly/windowsservercore-1809/msvc
+              nightly-windowsservercoreltsc2019-gnu
+          - name: windowsnanoserverltsc2019-gnu
+            context: nightly/windowsnanoserver-ltsc2019/gnu
             platforms: windows/amd64
             tags: |
-              nightly-windowsservercore1809-msvc
-              nightly-windowsservercore1809-17763-msvc
+              nightly-windowsnanoserverltsc2019-gnu
+          - name: windowsservercoreltsc2022-gnu
+            context: nightly/windowsservercore-ltsc2022/gnu
+            platforms: windows/amd64
+            tags: |
+              nightly-windowsservercoreltsc2022-gnu
+          - name: windowsnanoserverltsc2022-gnu
+            context: nightly/windowsnanoserver-ltsc2022/gnu
+            platforms: windows/amd64
+            tags: |
+              nightly-windowsnanoserverltsc2022-gnu
+          - name: windowsservercoreltsc2025-gnu
+            context: nightly/windowsservercore-ltsc2025/gnu
+            platforms: windows/amd64
+            tags: |
+              nightly-windowsservercoreltsc2025-gnu
+          - name: windowsnanoserverltsc2025-gnu
+            context: nightly/windowsnanoserver-ltsc2025/gnu
+            platforms: windows/amd64
+            tags: |
+              nightly-windowsnanoserverltsc2025-gnu
+          - name: windowsservercoreltsc2019-17763-msvc
+            context: nightly/windowsservercore-ltsc2019/msvc
+            platforms: windows/amd64
+            tags: |
+              nightly-windowsservercoreltsc2019-msvc
+              nightly-windowsservercoreltsc2019-17763-msvc
+          - name: windowsservercoreltsc2022-20348-msvc
+            context: nightly/windowsservercore-ltsc2022/msvc
+            platforms: windows/amd64
+            tags: |
+              nightly-windowsservercoreltsc2022-msvc
+              nightly-windowsservercoreltsc2022-20348-msvc
+          - name: windowsservercoreltsc2025-22000-msvc
+            context: nightly/windowsservercore-ltsc2025/msvc
+            platforms: windows/amd64
+            tags: |
+              nightly-windowsservercoreltsc2025-msvc
+              nightly-windowsservercoreltsc2025-22000-msvc
 #VERSIONS
     name: ${{ matrix.name }}
     steps:

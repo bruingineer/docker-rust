@@ -22,7 +22,7 @@
 # That said, this Dockerfile will be built in a CI system for validation and testing in the project
 # but most definitely will skip deployment.
 
-FROM mcr.microsoft.com/windows/servercore:1809
+FROM mcr.microsoft.com/windows/servercore:ltsc2025
 
 LABEL org.opencontainers.image.source=https://github.com/rust-lang/docker-rust
 
@@ -42,7 +42,7 @@ RUN $url = 'https://download.visualstudio.microsoft.com/download/pr/20130c62-1bc
         --quiet --wait --norestart --nocache `
         --installPath C:\BuildTools `
         --add Microsoft.Component.MSBuild `
-        --add Microsoft.VisualStudio.Component.Windows10SDK.17763 `
+        --add Microsoft.VisualStudio.Component.Windows10SDK.22000 `
         --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64'; `
     Remove-Item 'C:\\vs_BuildTools.exe'; `
     Remove-Item -Force -Recurse 'C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer'; `
@@ -50,7 +50,7 @@ RUN $url = 'https://download.visualstudio.microsoft.com/download/pr/20130c62-1bc
 
 ENV RUSTUP_HOME=C:\rustup `
     CARGO_HOME=C:\cargo `
-    RUST_VERSION=1.90.0
+    RUST_VERSION=nightly
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; `
     $url = 'https://static.rust-lang.org/rustup/archive/1.28.2/x86_64-pc-windows-msvc/rustup-init.exe'; `

@@ -22,7 +22,7 @@
 # That said, this Dockerfile will be built in a CI system for validation and testing in the project
 # but most definitely will skip deployment.
 
-FROM mcr.microsoft.com/windows/servercore:1809
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
 LABEL org.opencontainers.image.source=https://github.com/rust-lang/docker-rust
 
@@ -50,7 +50,7 @@ RUN $url = 'https://download.visualstudio.microsoft.com/download/pr/20130c62-1bc
 
 ENV RUSTUP_HOME=C:\rustup `
     CARGO_HOME=C:\cargo `
-    RUST_VERSION=nightly
+    RUST_VERSION=1.90.0
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; `
     $url = 'https://static.rust-lang.org/rustup/archive/1.28.2/x86_64-pc-windows-msvc/rustup-init.exe'; `

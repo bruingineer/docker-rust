@@ -1,6 +1,6 @@
 # escape=`
 
-FROM mcr.microsoft.com/windows/servercore:1809
+FROM mcr.microsoft.com/windows/servercore:ltsc2025
 
 LABEL org.opencontainers.image.source=https://github.com/rust-lang/docker-rust
 
